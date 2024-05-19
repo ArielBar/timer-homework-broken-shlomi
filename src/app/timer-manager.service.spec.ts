@@ -10,7 +10,7 @@ describe('TimerManagerService', () => {
   });
   it('should create new timer', (done) => {
     const service: TimerManagerService = TestBed.get(TimerManagerService);
-    const sut = service.getTimer(123);
+    const sut = service.getNewTimer(123);
     sut.subscribe((emptyTimer) => {
       expect(emptyTimer).toEqual(service.initialValue);
       done();
@@ -23,7 +23,7 @@ describe('TimerManagerService', () => {
 
     it('should increment running timer by 3 after 3900ms', (done) => {
       const service: TimerManagerService = TestBed.get(TimerManagerService);
-      const sut = service.getTimer(123);
+      const sut = service.getNewTimer(123);
       service.playTimer(123);
 
       jest.advanceTimersByTime(3900);

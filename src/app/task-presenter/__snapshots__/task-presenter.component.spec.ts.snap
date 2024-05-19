@@ -10,7 +10,7 @@ exports[`TaskPresenterComponent should render task 1`] = `
     <div
       class="input-name"
     >
-      some name
+      SOME NAME
     </div>
     <p>
       10

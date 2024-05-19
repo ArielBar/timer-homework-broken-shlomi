@@ -7,7 +7,7 @@ import { LogicService } from '../logic.service';
   selector: 'app-task-container',
   templateUrl: './task-container.component.html',
   styleUrls: ['./task-container.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskContainerComponent implements OnInit {
   public tasks$: Observable<TaskModel[]>;
@@ -21,5 +21,9 @@ export class TaskContainerComponent implements OnInit {
 
   public onClick(evt: TaskModel) {
     this.service.updateTask(evt);
+  }
+
+  trackByTask(index: number, task: TaskModel) {
+    return index;
   }
 }

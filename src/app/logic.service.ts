@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { TaskModel } from './models/task-model';
 import { Observable, combineLatest, Subject, of } from 'rxjs';
 import { TaskFactoryService } from './task-factory.service';
-import { map } from 'rxjs/operators';
+import { delay, map, mergeMap, tap } from 'rxjs/operators';
 import { CloneSubject } from './clone-subject';
 
 @Injectable({
@@ -12,14 +12,36 @@ export class LogicService {
   readonly initialState: TaskModel[] = [];
   private state: TaskModel[] = [...this.initialState];
   private logicSubj$ = new CloneSubject(this.state);
+  private tasksStream$ = this.logicSubj$.asObservable();
 
-  constructor(private taskService: TaskFactoryService) {}
-  public get tasks$(): Observable<TaskModel[]> {
-    return this.logicSubj$.asObservable();
+  private totalTimeSubj$ = new Subject<number>()
+  private totalTimers$ = this.totalTimeSubj$.asObservable();
+
+  constructor(private taskService: TaskFactoryService) {
+    this.init();
   }
+
+  init() {
+    this.tasks$
+      .pipe(map((tasks: TaskModel[]) => tasks.map((task) => task.timer)))
+      .subscribe((timers: Observable<number>[]) => {
+        combineLatest(timers)
+          .pipe(
+            map((time: number[]) =>
+              time.reduce((currentTime, accTime) => currentTime + accTime, 0)
+            )
+          )
+          .subscribe((total) => this.totalTimeSubj$.next(total));
+      });
+  }
+
+  public get tasks$(): Observable<TaskModel[]> {
+    return this.tasksStream$;
+  }
+
   public addTask(tskName: string) {
     const newTask = this.taskService.createTask(tskName);
-    this.state.push(newTask);
+    this.state = [...this.state, newTask];
     this.doNext();
   }
 
@@ -30,18 +52,13 @@ export class LogicService {
   }
 
   public get totalTime$(): Observable<number> {
-    const res = new Subject<number>();
-
-    //FIXME: double subscribe is a bad practice
-    this.tasks$.pipe(map((x) => x.map((y) => y.timer))).subscribe((tmr) => {
-      combineLatest(tmr)
-        .pipe(map((x) => x.reduce((q, w) => q + w, 0)))
-        .subscribe((x) => res.next(x));
-    });
-    return res.asObservable();
+    return this.totalTimers$;
   }
-  public nameExists(value: string): Observable<boolean> {
-    return of(this.state.find((x) => x.name === value) !== undefined);
+
+  public nameExists(value: string): boolean {
+    return this.state.some((task) => {
+      return task.name.toLowerCase() === value.toLowerCase();
+    });
   }
   private toggleAllButtonTexts(
     tasks: TaskModel[],
@@ -49,11 +66,12 @@ export class LogicService {
   ): TaskModel[] {
     tasks
       .filter((tsk) => tsk.id !== selectedId)
-      .forEach((tsk) => this.inactivateButtons(tsk));
+      .forEach((tsk) => this.inactivateButton(tsk));
     this.toggleText(tasks[selectedId]);
     return tasks;
   }
-  private inactivateButtons(tsk: TaskModel): void {
+
+  private inactivateButton(tsk: TaskModel): void {
     if (tsk.buttonText === 'pause') {
       this.setPlay(tsk);
     }

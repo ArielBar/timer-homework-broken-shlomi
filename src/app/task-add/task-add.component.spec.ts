@@ -37,10 +37,10 @@ describe('TaskAddComponent', () => {
     it('makes expected calls', () => {
       const logicServiceStub: LogicService =
         fixture.debugElement.injector.get(LogicService);
-      jest.spyOn(logicServiceStub, 'nameExists').mockReturnValue(of(true));
-
-      const given = { value: 'hello' } as any;
-      component.validateNameExists(given);
+      jest.spyOn(logicServiceStub, 'nameExists').mockReturnValue(true);
+      component.ngOnInit();
+      component.form.get('text').setValue('hello')
+      component.form.updateValueAndValidity();
       expect(logicServiceStub.nameExists).toHaveBeenCalled();
     });
   });
