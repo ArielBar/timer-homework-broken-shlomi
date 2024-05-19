@@ -10,6 +10,7 @@ import { TaskPresenterComponent } from './task-presenter/task-presenter.componen
 import { TaskAddComponent } from './task-add/task-add.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MinuteSecondsPipe } from './minute-seconds.pipe';
+import { DatePipe } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,7 @@ import { MinuteSecondsPipe } from './minute-seconds.pipe';
     MaterialModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,6 +1,6 @@
 <mat-card>
   <app-task-presenter
-    *ngFor="let task of tasks$ | async"
+    *ngFor="let task of tasks$ | async; trackBy: trackByTask"
     [task]="task"
     (clicked)="onClick($event)"
   ></app-task-presenter>

@@ -13,8 +13,8 @@ export class TaskFactoryService {
     const task: TaskModel = {
       id: this.counter,
       buttonText: 'play_arrow',
-      name: name,
-      timer: this.timersService.getTimer(this.counter),
+      name,
+      timer: this.timersService.getNewTimer(this.counter),
     };
     this.incrementCounter();
     return task;

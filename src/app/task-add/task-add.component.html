@@ -4,17 +4,17 @@
       <div class="row">
         <mat-form-field>
           <input matInput placeholder="Task Name" formControlName="text" />
-          <mat-error *ngIf="form.controls['text'].hasError('required')">
+          <mat-error *ngIf="hasRequiredError">
             Minimal text is <strong>required</strong>
           </mat-error>
         </mat-form-field>
-        <div *ngIf="form.get('text')?.status === 'PENDING'">Checking...</div>
+        <div *ngIf="formStatus$ | async">Checking...</div>
         <div
           *ngIf="
-            form.get('text')?.errors && form.get('text')?.errors['nameTaken']
+            form.get('text')?.errors && form.get('text')?.hasError('nameTaken')
           "
         >
-          😢 Oh noes, this task is already exists!
+          😢 Oh noes, this task already exists!
         </div>
         <button
           color="primary"

@@ -4,6 +4,7 @@ import { LogicService } from './logic.service';
 import { skip, bufferCount } from 'rxjs/operators';
 describe('LogicService', () => {
   let service: LogicService;
+  const taskNameSample = 'Some Task';
   beforeEach(() => {
     const taskModelStub = { id: {}, buttonText: {} };
     const fakeService = {
@@ -35,9 +36,9 @@ describe('LogicService', () => {
       expect(x.length).toEqual(1);
       done();
     });
-    service.addTask('any name');
+    service.addTask('some name');
   });
-  it('state increases by 4 after add 4 tasks', (done) => {
+  it('state increases by 4 after add 4 tasks, check if name exist', (done) => {
     expect.hasAssertions();
     const iterates = 4;
     const fake = TestBed.get(TaskFactoryService);
@@ -48,7 +49,7 @@ describe('LogicService', () => {
       done();
     });
     for (let index = 0; index < iterates; index++) {
-      service.addTask('any name');
+      service.addTask('some name');
     }
   });
 });
